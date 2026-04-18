@@ -29,12 +29,29 @@ function showStatus(message, type = 'error') {
   status.className = `status status--${type}`;
 }
 
+function createErrorElement(message) {
+  const main = document.querySelector('main');
+  const errorElement = document.createElement('div');
+  errorElement.ariaLive = 'polite';
+  errorElement.classList.add('status', 'status--error');
+  errorElement.textContent = message;
+  main.appendChild(errorElement);
+}
+
+function clearErrorElement() {
+  const main = document.querySelector('main');
+  const errorElement = main.querySelector('.status--error');
+  if (errorElement) {
+    main.removeChild(errorElement);
+  }
+}
+
 function createCountriesList(country) {
   const countryCard = document.createElement('li');
   countryCard.classList.add('card');
 
   const countryLink = document.createElement('a');
-  countryLink.href = `${slugify(country.name.common)}`;
+  countryLink.href = `country.html?name=${slugify(country.name.common)}`;
 
   const flagDiv = document.createElement('div');
   flagDiv.classList.add('card__flag');
@@ -123,6 +140,7 @@ async function getCountries() {
     if (!response.ok) {
       throw new Error('API returned an error status');
     }
+    clearErrorElement();
     const data = await response.json();
     const shuffledData = shuffle(data);
     // so that each refresh doesn't change the order of countries until shuffle button is clicked
@@ -131,7 +149,7 @@ async function getCountries() {
     return shuffledData;
   } catch (error) {
     console.error('Error:', error);
-    showStatus('Something went wrong. Please try again later.');
+    createErrorElement('Something went wrong. Please try again later.');
   }
 }
 
