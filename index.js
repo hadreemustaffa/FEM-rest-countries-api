@@ -10,6 +10,18 @@ function shuffle(array) {
   return array;
 }
 
+function slugify(text) {
+  return text
+    .toString()
+    .normalize('NFD') // Separate accents from letters
+    .replace(/[\u0300-\u036f]/g, '') // Remove the separated accents
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-') // Replace spaces with -
+    .replace(/[^\w-]+/g, '') // Remove all non-word chars (except -)
+    .replace(/--+/g, '-'); // Replace multiple - with single -
+}
+
 function showStatus(message, type = 'error') {
   const status = document.getElementById('status');
   if (!status) return;
@@ -22,7 +34,7 @@ function createCountriesList(country) {
   countryCard.classList.add('card');
 
   const countryLink = document.createElement('a');
-  countryLink.href = `${country.name.common.toLowerCase().replace(/\s/g, '-')}`;
+  countryLink.href = `${slugify(country.name.common)}`;
 
   const flagDiv = document.createElement('div');
   flagDiv.classList.add('card__flag');
@@ -68,6 +80,8 @@ function createCountriesList(country) {
 
 function shuffleCountries(data) {
   const shuffledCountries = shuffle(data);
+  // overwrite the cache with the new shuffled order so that it persists until next shuffle or page refresh
+  sessionStorage.setItem(CACHE_KEY, JSON.stringify(shuffledCountries));
   shuffledCountries.forEach((country) => {
     createCountriesList(country);
   });
@@ -76,7 +90,7 @@ function shuffleCountries(data) {
 function renderShuffledCountries() {
   const cardsContainer = document.querySelector('.cards');
   // clear all children before rendering shuffled list
-  cardsContainer.innerHTML = '';
+  cardsContainer.replaceChildren();
   const cached = sessionStorage.getItem(CACHE_KEY);
   if (cached) {
     const data = JSON.parse(cached);
@@ -85,36 +99,40 @@ function renderShuffledCountries() {
 }
 
 const shuffleButton = document.getElementById('shuffle');
-shuffleButton.addEventListener('click', () => {
-  renderShuffledCountries();
-});
+if (shuffleButton) {
+  shuffleButton.addEventListener('click', () => {
+    renderShuffledCountries();
+  });
+}
 
-function getCountries() {
+async function getCountries() {
   const cached = sessionStorage.getItem(CACHE_KEY);
 
   if (cached) {
     const data = JSON.parse(cached);
-    shuffleCountries(data);
+    data.forEach((country) => {
+      createCountriesList(country);
+    });
     return Promise.resolve(data);
   }
 
-  fetch(
-    'https://restcountries.com/v3.1/all?fields=flags,name,population,region,capital'
-  )
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error('API returned an error status');
-      }
-      return response.json();
-    })
-    .then((data) => {
-      sessionStorage.setItem(CACHE_KEY, JSON.stringify(data));
-      shuffleCountries(data);
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-      showStatus('Something went wrong. Please try again later.');
-    });
+  try {
+    const response = await fetch(
+      'https://restcountries.com/v3.1/all?fields=flags,name,population,region,capital'
+    );
+    if (!response.ok) {
+      throw new Error('API returned an error status');
+    }
+    const data = await response.json();
+    const shuffledData = shuffle(data);
+    // so that each refresh doesn't change the order of countries until shuffle button is clicked
+    sessionStorage.setItem(CACHE_KEY, JSON.stringify(shuffledData));
+    shuffleCountries(shuffledData);
+    return shuffledData;
+  } catch (error) {
+    console.error('Error:', error);
+    showStatus('Something went wrong. Please try again later.');
+  }
 }
 
 document.addEventListener('DOMContentLoaded', getCountries);
