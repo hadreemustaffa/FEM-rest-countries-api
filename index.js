@@ -10,18 +10,6 @@ function shuffle(array) {
   return array;
 }
 
-function slugify(text) {
-  return text
-    .toString()
-    .normalize('NFD') // Separate accents from letters
-    .replace(/[\u0300-\u036f]/g, '') // Remove the separated accents
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-') // Replace spaces with -
-    .replace(/[^\w-]+/g, '') // Remove all non-word chars (except -)
-    .replace(/--+/g, '-'); // Replace multiple - with single -
-}
-
 function showStatus(message, type = 'error') {
   const status = document.getElementById('status');
   if (!status) return;
@@ -51,14 +39,14 @@ function createCountriesList(country) {
   countryCard.classList.add('card');
 
   const countryLink = document.createElement('a');
-  countryLink.href = `country.html?name=${slugify(country.name.common)}`;
+  countryLink.href = `country/?name=${encodeURIComponent(country.name.common)}`;
 
   const flagDiv = document.createElement('div');
   flagDiv.classList.add('card__flag');
 
   const flagImg = document.createElement('img');
   flagImg.classList.add('card__flag-img');
-  flagImg.src = country.flags.png;
+  flagImg.src = country.flags.svg;
   flagImg.alt = `${country.name.common} flag`;
 
   flagDiv.appendChild(flagImg);
@@ -92,6 +80,8 @@ function createCountriesList(country) {
 
   countryCard.appendChild(countryLink);
 
+  const cardsContainer = document.querySelector('.cards');
+  if (!cardsContainer) return;
   document.querySelector('.cards').appendChild(countryCard);
 }
 
@@ -135,7 +125,7 @@ async function getCountries() {
 
   try {
     const response = await fetch(
-      'https://restcountries.com/v3.1/all?fields=flags,name,population,region,capital'
+      'https://restcountries.com/v3.1/all?fields=cca3,flags,name,population,region,subregion,capital,tld,currencies,languages'
     );
     if (!response.ok) {
       throw new Error('API returned an error status');
