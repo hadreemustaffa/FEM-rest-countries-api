@@ -1,38 +1,10 @@
-// constants
-const CACHE_KEY = 'countries-data';
-
-// helpers
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-}
-
-function showStatus(message, type = 'error') {
-  const status = document.getElementById('status');
-  if (!status) return;
-  status.textContent = message;
-  status.className = `status status--${type}`;
-}
-
-function createErrorElement(message) {
-  const main = document.querySelector('main');
-  const errorElement = document.createElement('div');
-  errorElement.ariaLive = 'polite';
-  errorElement.classList.add('status', 'status--error');
-  errorElement.textContent = message;
-  main.appendChild(errorElement);
-}
-
-function clearErrorElement() {
-  const main = document.querySelector('main');
-  const errorElement = main.querySelector('.status--error');
-  if (errorElement) {
-    main.removeChild(errorElement);
-  }
-}
+import { COUNTRIES_DATA_KEY } from './scripts/constants.js';
+import {
+  shuffle,
+  showStatus,
+  createErrorElement,
+  clearErrorElement,
+} from './scripts/helpers.js';
 
 function createCountriesList(country) {
   const countryCard = document.createElement('li');
@@ -88,7 +60,7 @@ function createCountriesList(country) {
 function shuffleCountries(data) {
   const shuffledCountries = shuffle(data);
   // overwrite the cache with the new shuffled order so that it persists until next shuffle or page refresh
-  sessionStorage.setItem(CACHE_KEY, JSON.stringify(shuffledCountries));
+  sessionStorage.setItem(COUNTRIES_DATA_KEY, JSON.stringify(shuffledCountries));
   shuffledCountries.forEach((country) => {
     createCountriesList(country);
   });
@@ -98,7 +70,7 @@ function renderShuffledCountries() {
   const cardsContainer = document.querySelector('.cards');
   // clear all children before rendering shuffled list
   cardsContainer.replaceChildren();
-  const cached = sessionStorage.getItem(CACHE_KEY);
+  const cached = sessionStorage.getItem(COUNTRIES_DATA_KEY);
   if (cached) {
     const data = JSON.parse(cached);
     shuffleCountries(data);
@@ -113,7 +85,7 @@ if (shuffleButton) {
 }
 
 async function getCountries() {
-  const cached = sessionStorage.getItem(CACHE_KEY);
+  const cached = sessionStorage.getItem(COUNTRIES_DATA_KEY);
 
   if (cached) {
     const data = JSON.parse(cached);
@@ -134,7 +106,7 @@ async function getCountries() {
     const data = await response.json();
     const shuffledData = shuffle(data);
     // so that each refresh doesn't change the order of countries until shuffle button is clicked
-    sessionStorage.setItem(CACHE_KEY, JSON.stringify(shuffledData));
+    sessionStorage.setItem(COUNTRIES_DATA_KEY, JSON.stringify(shuffledData));
     shuffleCountries(shuffledData);
     return shuffledData;
   } catch (error) {

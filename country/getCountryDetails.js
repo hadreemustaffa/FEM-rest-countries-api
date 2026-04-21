@@ -1,12 +1,15 @@
+import { COUNTRIES_DATA_KEY } from '../scripts/constants.js';
+import { createErrorElement, clearErrorElement } from '../scripts/helpers.js';
+
 function getAllDataFromSessionStorage() {
-  const data = sessionStorage.getItem('countries-data');
+  const data = sessionStorage.getItem(COUNTRIES_DATA_KEY);
   return JSON.parse(data);
 }
 
 function getDataFromSessionStorage() {
   const urlParams = new URLSearchParams(window.location.search);
   const countryName = decodeURIComponent(urlParams.get('name'));
-  const data = sessionStorage.getItem('countries-data');
+  const data = sessionStorage.getItem(COUNTRIES_DATA_KEY);
   const countryData = JSON.parse(data).find(
     (c) => c.name.common === countryName
   );
@@ -127,6 +130,11 @@ function createCountryDetailsElement(country) {
       listItem.textContent = name;
       borderList.appendChild(listItem);
     });
+  } else {
+    const noBordersItem = document.createElement('li');
+    noBordersItem.classList.add('details__info-border-countries-item');
+    noBordersItem.textContent = 'None';
+    borderList.appendChild(noBordersItem);
   }
 
   borderSection.appendChild(borderList);
@@ -162,6 +170,7 @@ async function getCountryDetails() {
     clearErrorElement();
     const data = await response.json();
     createCountryDetailsElement(data[0]);
+    console.log(data);
 
     hideLoader();
     return data;

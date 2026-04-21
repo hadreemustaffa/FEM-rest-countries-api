@@ -110,7 +110,7 @@ header {
   justify-content: space-between;
   padding: var(--spacing-md) var(--spacing-3xl);
   color: var(--color-text);
-  background-color: var(--color-bg);
+  background-color: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
   width: 100%;
   box-shadow: var(--shadow-sm);
@@ -132,6 +132,7 @@ a {
 }
 
 body {
+  min-width: 350px;
   color: var(--color-text);
   background-color: var(--color-bg);
   font-size: var(--font-size-base);
@@ -157,7 +158,7 @@ select,
 button,
 .btn {
   font-size: var(--font-size-sm);
-  background-color: var(--color-bg);
+  background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   color: var(--color-input);
   padding: var(--spacing-sm) var(--spacing-md);
@@ -176,6 +177,10 @@ button#theme-toggle {
   align-items: center;
   gap: var(--spacing-xs);
   border: 0;
+
+  img {
+    transition: transform 300ms ease;
+  }
 }
 
 input[type='search'] {
@@ -218,6 +223,8 @@ select {
     }
     & .card__details {
       padding: var(--spacing-md);
+      background-color: var(--color-surface);
+      height: 100%;
 
       & .card__details-title {
         margin-bottom: var(--spacing-sm);

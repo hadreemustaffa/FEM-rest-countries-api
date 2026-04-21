@@ -12,14 +12,20 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
     rel="stylesheet">
+
+  <script>
+    // so no flickering occurs when navigating between pages
+    const theme = localStorage.getItem("fem-countries-api-theme") || "light";
+    document.documentElement.dataset.theme = theme;
+  </script>
 </head>
 
 <body id="home">
   <header>
-    <h1>Where in the world?</h1>
+    <h1><a href="/">Where in the world?</a></h1>
     <button id="theme-toggle" aria-label="Toggle dark mode">
-      <span class="theme-toggle__icon">🌙</span>
-      <span class="theme-toggle__text">Dark Mode</span>
+      <img id="theme-toggle__icon" class="theme-toggle__icon" src="./icons/moon.png" alt="" width="24"
+        height="24"></img>
     </button>
   </header>
 
@@ -45,7 +51,8 @@
     </ul>
   </main>
 
-  <script src="index.js"></script>
+  <script type="module" src="./index.js"></script>
+  <script type="module" src="./scripts/theme.js"></script>
 </body>
 
 </html>
