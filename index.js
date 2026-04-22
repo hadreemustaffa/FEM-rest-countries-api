@@ -84,6 +84,42 @@ if (shuffleButton) {
   });
 }
 
+const searchInput = document.getElementById('search');
+if (searchInput) {
+  searchInput.addEventListener('input', (event) => {
+    const query = event.target.value.toLowerCase().trim();
+    const countryCards = document.querySelectorAll('.card');
+    countryCards.forEach((card) => {
+      const countryName = card
+        .querySelector('.card__details-title')
+        .textContent.toLowerCase();
+      if (countryName.includes(query)) {
+        card.removeAttribute('style');
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  });
+}
+
+const filterSelect = document.getElementById('region-select');
+if (filterSelect) {
+  filterSelect.addEventListener('change', (event) => {
+    const selectedRegion = event.target.value;
+    const countryCards = document.querySelectorAll('.card');
+    countryCards.forEach((card) => {
+      const region = card
+        .querySelector('.card__details-region')
+        .textContent.replace('Region: ', '');
+      if (selectedRegion === 'All' || region === selectedRegion) {
+        card.removeAttribute('style');
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  });
+}
+
 async function getCountries() {
   const cached = sessionStorage.getItem(COUNTRIES_DATA_KEY);
 
