@@ -126,8 +126,11 @@ function createCountryDetailsElement(country) {
     const borderCountryNames = getBorderCountryNames(country.borders);
     borderCountryNames.forEach((name) => {
       const listItem = document.createElement('li');
+      const listItemLink = document.createElement('a');
       listItem.classList.add('details__info-border-countries-item');
-      listItem.textContent = name;
+      listItemLink.href = `?name=${encodeURIComponent(name)}`;
+      listItemLink.textContent = name;
+      listItem.appendChild(listItemLink);
       borderList.appendChild(listItem);
     });
   } else {
