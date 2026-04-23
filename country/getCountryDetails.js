@@ -69,23 +69,23 @@ function createCountryDetailsElement(country) {
 
   const firstColumn = document.createElement('div');
   const nativeNameLi = document.createElement('li');
-  nativeNameLi.innerHTML = `<strong>Native Name:</strong> ${Object.values(countryData.name.nativeName)[0].common}`;
+  nativeNameLi.innerHTML = `<strong>Native Name:</strong> ${Object.values(countryData.name.nativeName)[0] ? Object.values(countryData.name.nativeName)[0].common : 'N/A'}`;
   firstColumn.appendChild(nativeNameLi);
 
   const populationLi = document.createElement('li');
-  populationLi.innerHTML = `<strong>Population:</strong> ${countryData.population.toLocaleString()}`;
+  populationLi.innerHTML = `<strong>Population:</strong> ${countryData.population ? countryData.population.toLocaleString() : 'N/A'}`;
   firstColumn.appendChild(populationLi);
 
   const regionLi = document.createElement('li');
-  regionLi.innerHTML = `<strong>Region:</strong> ${countryData.region}`;
+  regionLi.innerHTML = `<strong>Region:</strong> ${countryData.region ? countryData.region : 'N/A'}`;
   firstColumn.appendChild(regionLi);
 
   const subRegionLi = document.createElement('li');
-  subRegionLi.innerHTML = `<strong>Sub Region:</strong> ${countryData.subregion}`;
+  subRegionLi.innerHTML = `<strong>Sub Region:</strong> ${countryData.subregion ? countryData.subregion : 'N/A'}`;
   firstColumn.appendChild(subRegionLi);
 
   const capitalLi = document.createElement('li');
-  capitalLi.innerHTML = `<strong>Capital:</strong> ${countryData.capital ? countryData.capital[0] : 'N/A'}`;
+  capitalLi.innerHTML = `<strong>Capital:</strong> ${countryData.capital && countryData.capital.length > 0 ? countryData.capital[0] : 'N/A'}`;
   firstColumn.appendChild(capitalLi);
 
   const secondColumn = document.createElement('div');
@@ -135,7 +135,6 @@ function createCountryDetailsElement(country) {
     });
   } else {
     const noBordersItem = document.createElement('li');
-    noBordersItem.classList.add('details__info-border-countries-item');
     noBordersItem.textContent = 'None';
     borderList.appendChild(noBordersItem);
   }
@@ -173,14 +172,10 @@ async function getCountryDetails() {
     clearErrorElement();
     const data = await response.json();
     createCountryDetailsElement(data[0]);
-    console.log(data);
-
     hideLoader();
-    return data;
   } catch (error) {
     console.error('Error:', error);
     createErrorElement('Something went wrong. Please try again later.');
-
     hideLoader();
   }
 }

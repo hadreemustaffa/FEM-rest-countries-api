@@ -40,7 +40,7 @@ function createCountriesList(country) {
 
   const capitalParagraph = document.createElement('p');
   capitalParagraph.classList.add('card__details-capital');
-  capitalParagraph.textContent = `Capital: ${country.capital ? country.capital[0] : 'N/A'}`;
+  capitalParagraph.textContent = `Capital: ${country.capital && country.capital.length > 0 ? country.capital[0] : 'N/A'}`;
 
   detailsDiv.appendChild(nameHeading);
   detailsDiv.appendChild(populationParagraph);
@@ -57,13 +57,28 @@ function createCountriesList(country) {
   document.querySelector('.cards').appendChild(countryCard);
 }
 
-function shuffleCountries(data) {
-  const shuffledCountries = shuffle(data);
-  // overwrite the cache with the new shuffled order so that it persists until next shuffle or page refresh
-  sessionStorage.setItem(COUNTRIES_DATA_KEY, JSON.stringify(shuffledCountries));
-  shuffledCountries.forEach((country) => {
-    createCountriesList(country);
+function render() {
+  const allCountries = JSON.parse(sessionStorage.getItem(COUNTRIES_DATA_KEY));
+  const cardsContainer = document.querySelector('.cards');
+  cardsContainer.replaceChildren();
+
+  const filtered = allCountries.filter((country) => {
+    const matchesSearch = country.name.common
+      .toLowerCase()
+      .includes(currentFilters.search.toLowerCase());
+    const matchesRegion =
+      !currentFilters.region || country.region === currentFilters.region;
+    return matchesSearch && matchesRegion;
   });
+
+  filtered.forEach((country) => createCountriesList(country));
+}
+
+function shuffleCountries() {
+  const allCountries = JSON.parse(sessionStorage.getItem(COUNTRIES_DATA_KEY));
+  const shuffled = shuffle(allCountries);
+  sessionStorage.setItem(COUNTRIES_DATA_KEY, JSON.stringify(shuffled));
+  render();
 }
 
 function renderShuffledCountries() {
@@ -84,41 +99,22 @@ if (shuffleButton) {
   });
 }
 
+let currentFilters = {
+  search: '',
+  region: '',
+};
+
 const searchInput = document.getElementById('search');
-if (searchInput) {
-  searchInput.addEventListener('input', (event) => {
-    const query = event.target.value.toLowerCase().trim();
-    const countryCards = document.querySelectorAll('.card');
-    countryCards.forEach((card) => {
-      const countryName = card
-        .querySelector('.card__details-title')
-        .textContent.toLowerCase();
-      if (countryName.includes(query)) {
-        card.removeAttribute('style');
-      } else {
-        card.style.display = 'none';
-      }
-    });
-  });
-}
+searchInput.addEventListener('input', (event) => {
+  currentFilters.search = event.target.value.trim();
+  render();
+});
 
 const filterSelect = document.getElementById('region-select');
-if (filterSelect) {
-  filterSelect.addEventListener('change', (event) => {
-    const selectedRegion = event.target.value;
-    const countryCards = document.querySelectorAll('.card');
-    countryCards.forEach((card) => {
-      const region = card
-        .querySelector('.card__details-region')
-        .textContent.replace('Region: ', '');
-      if (selectedRegion === 'All' || region === selectedRegion) {
-        card.removeAttribute('style');
-      } else {
-        card.style.display = 'none';
-      }
-    });
-  });
-}
+filterSelect.addEventListener('change', (event) => {
+  currentFilters.region = event.target.value;
+  render();
+});
 
 async function getCountries() {
   const cached = sessionStorage.getItem(COUNTRIES_DATA_KEY);
@@ -128,7 +124,7 @@ async function getCountries() {
     data.forEach((country) => {
       createCountriesList(country);
     });
-    return Promise.resolve(data);
+    return;
   }
 
   try {
@@ -143,8 +139,9 @@ async function getCountries() {
     const shuffledData = shuffle(data);
     // so that each refresh doesn't change the order of countries until shuffle button is clicked
     sessionStorage.setItem(COUNTRIES_DATA_KEY, JSON.stringify(shuffledData));
-    shuffleCountries(shuffledData);
-    return shuffledData;
+    shuffledData.forEach((country) => {
+      createCountriesList(country);
+    });
   } catch (error) {
     console.error('Error:', error);
     createErrorElement('Something went wrong. Please try again later.');

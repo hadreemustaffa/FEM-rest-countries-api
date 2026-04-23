@@ -404,7 +404,7 @@ select {
   bottom: -4px;
   left: -4px;
 }
-.loader__spinner {
+.loader__bar {
   position: absolute;
   top: 0;
   right: 100%;
