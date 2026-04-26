@@ -3,10 +3,11 @@
 <html>
 
 <head>
+  <base href="/rest-countries-api/">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Country Details</title>
-  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -15,17 +16,16 @@
 
   <script>
     // so no flickering occurs when navigating between pages
-    const theme = localStorage.getItem("fem-countries-api-theme") || "light";
+    const theme = localStorage.getItem("rest-countries-api-theme") || "light";
     document.documentElement.dataset.theme = theme;
   </script>
 </head>
 
 <body id="country-details">
   <header>
-    <h1><a href="/">Where in the world?</a></h1>
+    <h1><a href="index.html">Where in the world?</a></h1>
     <button id="theme-toggle" aria-label="Toggle dark mode">
-      <img id="theme-toggle__icon" class="theme-toggle__icon" src="../icons/moon.png" alt="" width="24"
-        height="24"></img>
+      <img id="theme-toggle__icon" class="theme-toggle__icon" src="icons/moon.png" alt="" width="24" height="24"></img>
     </button>
 
     <div id="loader" class="loader" aria-hidden="false">
@@ -35,15 +35,15 @@
 
   <main>
     <div class="input-container">
-      <a href="/" class="btn">&larr; Back</a>
+      <a href="index.html" class="btn">&larr; Back</a>
     </div>
 
     <div class="details">
     </div>
   </main>
 
-  <script type="module" src="./getCountryDetails.js"></script>
-  <script type="module" src="../scripts/theme.js"></script>
+  <script type="module" src="country/getCountryDetails.js"></script>
+  <script type="module" src="scripts/theme.js"></script>
 </body>
 
 </html>

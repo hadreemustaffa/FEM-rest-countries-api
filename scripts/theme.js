@@ -1,9 +1,7 @@
 import { THEME_KEY } from './constants.js';
 
-const countryPage = window.location.pathname.includes('/country/');
-const isInCountryPage = countryPage ? '../' : './';
-const moonIconSrc = `${isInCountryPage}icons/moon.png`;
-const sunIconSrc = `${isInCountryPage}icons/sun.png`;
+const moonIconSrc = 'icons/moon.png';
+const sunIconSrc = 'icons/sun.png';
 const themeToggle = document.getElementById('theme-toggle');
 const themeIcon = themeToggle.querySelector('.theme-toggle__icon');
 

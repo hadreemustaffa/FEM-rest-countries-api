@@ -128,7 +128,7 @@ function createCountryDetailsElement(country) {
       const listItem = document.createElement('li');
       const listItemLink = document.createElement('a');
       listItem.classList.add('details__info-border-countries-item');
-      listItemLink.href = `?name=${encodeURIComponent(name)}`;
+      listItemLink.href = `country/?name=${encodeURIComponent(name)}`;
       listItemLink.textContent = name;
       listItem.appendChild(listItemLink);
       borderList.appendChild(listItem);

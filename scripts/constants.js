@@ -1,2 +1,2 @@
 export const COUNTRIES_DATA_KEY = 'countries-data';
-export const THEME_KEY = 'fem-countries-api-theme';
+export const THEME_KEY = 'rest-countries-api-theme';

@@ -3,6 +3,7 @@
 <html>
 
 <head>
+  <base href="/rest-countries-api/">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>REST Countries Challenge</title>
@@ -15,17 +16,16 @@
 
   <script>
     // so no flickering occurs when navigating between pages
-    const theme = localStorage.getItem("fem-countries-api-theme") || "light";
+    const theme = localStorage.getItem("rest-countries-api-theme") || "light";
     document.documentElement.dataset.theme = theme;
   </script>
 </head>
 
 <body id="home">
   <header>
-    <h1><a href="/">Where in the world?</a></h1>
+    <h1><a href="./">Where in the world?</a></h1>
     <button id="theme-toggle" aria-label="Toggle dark mode">
-      <img id="theme-toggle__icon" class="theme-toggle__icon" src="./icons/moon.png" alt="" width="24"
-        height="24"></img>
+      <img id="theme-toggle__icon" class="theme-toggle__icon" src="icons/moon.png" alt="" width="24" height="24"></img>
     </button>
   </header>
 
@@ -51,8 +51,8 @@
     </ul>
   </main>
 
-  <script type="module" src="./index.js"></script>
-  <script type="module" src="./scripts/theme.js"></script>
+  <script type="module" src="index.js"></script>
+  <script type="module" src="scripts/theme.js"></script>
 </body>
 
 </html>
