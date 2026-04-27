@@ -140,7 +140,6 @@ body {
 }
 
 main {
-  position: relative;
   padding: 0 var(--spacing-3xl) var(--spacing-2xl);
   transition: padding 300ms ease;
 }
@@ -295,7 +294,8 @@ select {
 
 .status {
   position: absolute;
-  top: -2.2rem;
+  bottom: var(--spacing-md);
+  right: var(--spacing-md);
   padding: var(--spacing-xs);
   border-radius: var(--radius-sm);
   font-size: var(--font-size-sm);
@@ -408,30 +408,26 @@ select {
   bottom: 0;
   left: 0;
   background: var(--color-text);
-  width: 0;
+  width: 500px;
   animation: borealisBar 2s linear infinite;
+  transform-origin: left;
 }
 
 @keyframes borealisBar {
   0% {
-    left: 0%;
-    right: 100%;
-    width: 0%;
+    transform: translateX(0%) scaleX(0);
   }
+
   10% {
-    left: 0%;
-    right: 75%;
-    width: 25%;
+    transform: translateX(0%) scaleX(0.25);
   }
+
   90% {
-    right: 0%;
-    left: 75%;
-    width: 25%;
+    transform: translateX(300%) scaleX(0.25);
   }
+
   100% {
-    left: 100%;
-    right: 0%;
-    width: 0%;
+    transform: translateX(400%) scaleX(0);
   }
 }
 

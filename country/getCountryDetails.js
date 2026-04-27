@@ -3,6 +3,12 @@ import { createErrorElement, clearErrorElement } from '../scripts/helpers.js';
 
 function getAllDataFromSessionStorage() {
   const data = sessionStorage.getItem(COUNTRIES_DATA_KEY);
+
+  if (!data) {
+    console.error('No country data found in sessionStorage.');
+    return [];
+  }
+
   return JSON.parse(data);
 }
 
@@ -19,10 +25,6 @@ function getDataFromSessionStorage() {
 
 function getBorderCountryNames(borderCodes) {
   const data = getAllDataFromSessionStorage();
-  if (!data) {
-    console.error('No country data found in sessionStorage.');
-    return [];
-  }
 
   const borderCountryNames = borderCodes.map((code) => {
     const country = data.find((c) => c.cca3 === code);
@@ -69,7 +71,7 @@ function createCountryDetailsElement(country) {
 
   const firstColumn = document.createElement('div');
   const nativeNameLi = document.createElement('li');
-  nativeNameLi.innerHTML = `<strong>Native Name:</strong> ${Object.values(countryData.name.nativeName)[0] ? Object.values(countryData.name.nativeName)[0].common : 'N/A'}`;
+  nativeNameLi.innerHTML = `<strong>Native Name:</strong> ${countryData.name.nativeName ? Object.values(countryData.name.nativeName)[0].common : 'N/A'}`;
   firstColumn.appendChild(nativeNameLi);
 
   const populationLi = document.createElement('li');

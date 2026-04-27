@@ -1,7 +1,6 @@
 import { COUNTRIES_DATA_KEY } from './scripts/constants.js';
 import {
   shuffle,
-  showStatus,
   createErrorElement,
   clearErrorElement,
 } from './scripts/helpers.js';
@@ -104,22 +103,26 @@ if (shuffleButton) {
   });
 }
 
-let currentFilters = {
+const currentFilters = {
   search: '',
   region: '',
 };
 
 const searchInput = document.getElementById('search');
-searchInput.addEventListener('input', (event) => {
-  currentFilters.search = event.target.value.trim();
-  render();
-});
+if (searchInput) {
+  searchInput.addEventListener('input', (event) => {
+    currentFilters.search = event.target.value.trim();
+    render();
+  });
+}
 
 const filterSelect = document.getElementById('region-select');
-filterSelect.addEventListener('change', (event) => {
-  currentFilters.region = event.target.value;
-  render();
-});
+if (filterSelect) {
+  filterSelect.addEventListener('change', (event) => {
+    currentFilters.region = event.target.value;
+    render();
+  });
+}
 
 async function getCountries() {
   const cached = sessionStorage.getItem(COUNTRIES_DATA_KEY);

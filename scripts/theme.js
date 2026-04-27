@@ -4,21 +4,26 @@ import { moonIcon, sunIcon } from './icons.js';
 const themeToggle = document.getElementById('theme-toggle');
 
 if (themeToggle) {
-  const savedTheme = localStorage.getItem(THEME_KEY);
-  if (savedTheme) {
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    themeToggle.innerHTML = savedTheme === 'dark' ? sunIcon : moonIcon;
-  }
+  let currentTheme = localStorage.getItem(THEME_KEY) || 'light';
+
+  const applyTheme = (theme) => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem(THEME_KEY, theme);
+
+    if (theme === 'dark') {
+      themeToggle.innerHTML = sunIcon;
+      themeToggle.setAttribute('aria-label', 'Toggle Light Mode');
+    } else {
+      themeToggle.innerHTML = moonIcon;
+      themeToggle.setAttribute('aria-label', 'Toggle Dark Mode');
+    }
+  };
+
+  // initial load
+  applyTheme(currentTheme);
 
   themeToggle.addEventListener('click', () => {
-    const isDarkTheme =
-      document.documentElement.getAttribute('data-theme') === 'dark';
-
-    localStorage.setItem(THEME_KEY, isDarkTheme ? 'light' : 'dark');
-    themeToggle.innerHTML = isDarkTheme ? moonIcon : sunIcon;
-    document.documentElement.setAttribute(
-      'data-theme',
-      isDarkTheme ? 'light' : 'dark'
-    );
+    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyTheme(currentTheme);
   });
 }

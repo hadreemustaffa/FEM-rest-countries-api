@@ -16,7 +16,7 @@ export function showStatus(message, type = 'error') {
 export function createErrorElement(message) {
   const main = document.querySelector('main');
   const errorElement = document.createElement('div');
-  errorElement.ariaLive = 'polite';
+  errorElement.setAttribute('aria-live', 'polite');
   errorElement.classList.add('status', 'status--error');
   errorElement.textContent = message;
   main.appendChild(errorElement);
