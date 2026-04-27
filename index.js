@@ -94,8 +94,13 @@ function renderShuffledCountries() {
 
 const shuffleButton = document.getElementById('shuffle');
 if (shuffleButton) {
+  const shuffleIcon = shuffleButton.querySelector('svg');
   shuffleButton.addEventListener('click', () => {
+    shuffleIcon.classList.add('shuffling');
     renderShuffledCountries();
+  });
+  shuffleIcon.addEventListener('animationend', () => {
+    shuffleIcon.classList.remove('shuffling');
   });
 }
 

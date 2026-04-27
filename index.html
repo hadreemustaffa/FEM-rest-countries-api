@@ -21,29 +21,50 @@
   </script>
 </head>
 
-<body id="home">
+<body>
   <header>
     <h1><a href="./">Where in the world?</a></h1>
-    <button id="theme-toggle" aria-label="Toggle dark mode">
-      <img id="theme-toggle__icon" class="theme-toggle__icon" src="icons/moon.png" alt="" width="24" height="24"></img>
-    </button>
+    <button id="theme-toggle" class="btn" aria-label="Toggle dark mode"></button>
   </header>
 
   <main>
-    <div class="input-container">
-      <input type="search" name="search" id="search" placeholder="Search for a country...">
+    <div class="container">
+      <div class="container__search">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 512 512">
+          <path d="M221.09 64a157.09 157.09 0 10157.09 157.09A157.1 157.1 0 00221.09 64z" fill="none"
+            stroke="currentColor" stroke-miterlimit="10" stroke-width="32" />
+          <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32"
+            d="M338.29 338.29L448 448" />
+        </svg>
+        <input type="search" class="btn" name="search" id="search" placeholder="Search for a country...">
+      </div>
 
-      <div class="flex gap-xs">
-        <select name="region" id="region-select" aria-label="Filter by region">
-          <option value="">Filter by Region</option>
-          <option value="Africa">Africa</option>
-          <option value="Americas">Americas</option>
-          <option value="Asia">Asia</option>
-          <option value="Europe">Europe</option>
-          <option value="Oceania">Oceania</option>
-        </select>
+      <div class="container__inner">
+        <div class="container__region-select">
+          <select class="btn" name="region" id="region-select" autocomplete="off" aria-label="Filter by region">
+            <option value="">Filter by Region</option>
+            <option value="Africa">Africa</option>
+            <option value="Americas">Americas</option>
+            <option value="Asia">Asia</option>
+            <option value="Europe">Europe</option>
+            <option value="Oceania">Oceania</option>
+          </select>
+          <svg class="icon icon--sm" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;"
+            class="ionicon" viewBox="0 0 512 512">
+            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="48"
+              d="M112 184l144 144 144-144" />
+          </svg>
+        </div>
 
-        <button type="button" id="shuffle">Shuffle</button>
+        <button type="button" id="shuffle" class="btn" aria-label="shuffle countries button" title="Shuffle Countries">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 512 512">
+            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"
+              d="M400 304l48 48-48 48M400 112l48 48-48 48M64 352h85.19a80 80 0 0066.56-35.62L256 256" />
+            <path
+              d="M64 160h85.19a80 80 0 0166.56 35.62l80.5 120.76A80 80 0 00362.81 352H416M416 160h-53.19a80 80 0 00-66.56 35.62L288 208"
+              fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" />
+          </svg>
+        </button>
       </div>
     </div>
 
