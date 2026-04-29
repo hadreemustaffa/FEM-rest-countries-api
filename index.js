@@ -1,8 +1,10 @@
 import { COUNTRIES_DATA_KEY } from './scripts/constants.js';
 import {
   shuffle,
+  debounce,
   createErrorElement,
   clearErrorElement,
+  getAllDataFromSessionStorage,
 } from './scripts/helpers.js';
 
 function createCountriesList(country) {
@@ -10,7 +12,7 @@ function createCountriesList(country) {
   countryCard.classList.add('card');
 
   const countryLink = document.createElement('a');
-  countryLink.href = `country/?name=${encodeURIComponent(country.name.common)}`;
+  countryLink.href = `country/?name=${encodeURIComponent(country.name.common)}&code=${country.cca3}`;
 
   const flagDiv = document.createElement('div');
   flagDiv.classList.add('card__flag');
@@ -57,38 +59,34 @@ function createCountriesList(country) {
 }
 
 function render() {
-  const allCountries = JSON.parse(sessionStorage.getItem(COUNTRIES_DATA_KEY));
+  const cachedCountries = getAllDataFromSessionStorage();
+
   const cardsContainer = document.querySelector('.cards');
-  cardsContainer.replaceChildren();
+  if (cardsContainer) {
+    clearErrorElement();
+    cardsContainer.replaceChildren();
 
-  const filtered = allCountries.filter((country) => {
-    const matchesSearch = country.name.common
-      .toLowerCase()
-      .includes(currentFilters.search.toLowerCase());
-    const matchesRegion =
-      !currentFilters.region || country.region === currentFilters.region;
-    return matchesSearch && matchesRegion;
-  });
+    const filtered = cachedCountries.filter((country) => {
+      const matchesSearch = country.name.common
+        .toLowerCase()
+        .includes(currentFilters.search.toLowerCase());
+      const matchesRegion =
+        !currentFilters.region || country.region === currentFilters.region;
+      return matchesSearch && matchesRegion;
+    });
 
-  filtered.forEach((country) => createCountriesList(country));
+    filtered.forEach((country) => createCountriesList(country));
+  } else {
+    console.error('Cards container not found in HTML.');
+    return createErrorElement('Unable to shuffle countries.');
+  }
 }
 
 function shuffleCountries() {
-  const allCountries = JSON.parse(sessionStorage.getItem(COUNTRIES_DATA_KEY));
-  const shuffled = shuffle(allCountries);
-  sessionStorage.setItem(COUNTRIES_DATA_KEY, JSON.stringify(shuffled));
+  const cachedCountries = getAllDataFromSessionStorage();
+  const shuffledCountries = shuffle(cachedCountries);
+  sessionStorage.setItem(COUNTRIES_DATA_KEY, JSON.stringify(shuffledCountries));
   render();
-}
-
-function renderShuffledCountries() {
-  const cardsContainer = document.querySelector('.cards');
-  // clear all children before rendering shuffled list
-  cardsContainer.replaceChildren();
-  const cached = sessionStorage.getItem(COUNTRIES_DATA_KEY);
-  if (cached) {
-    const data = JSON.parse(cached);
-    shuffleCountries(data);
-  }
 }
 
 const shuffleButton = document.getElementById('shuffle');
@@ -96,7 +94,7 @@ if (shuffleButton) {
   const shuffleIcon = shuffleButton.querySelector('svg');
   shuffleButton.addEventListener('click', () => {
     shuffleIcon.classList.add('shuffling');
-    renderShuffledCountries();
+    shuffleCountries();
   });
   shuffleIcon.addEventListener('animationend', () => {
     shuffleIcon.classList.remove('shuffling');
@@ -108,12 +106,14 @@ const currentFilters = {
   region: '',
 };
 
+const handleSearch = debounce((event) => {
+  currentFilters.search = event.target.value.trim();
+  render();
+}, 300);
+
 const searchInput = document.getElementById('search');
 if (searchInput) {
-  searchInput.addEventListener('input', (event) => {
-    currentFilters.search = event.target.value.trim();
-    render();
-  });
+  searchInput.addEventListener('input', handleSearch);
 }
 
 const filterSelect = document.getElementById('region-select');
@@ -125,19 +125,16 @@ if (filterSelect) {
 }
 
 async function getCountries() {
-  const cached = sessionStorage.getItem(COUNTRIES_DATA_KEY);
+  const cachedCountries = getAllDataFromSessionStorage();
 
-  if (cached) {
-    const data = JSON.parse(cached);
-    data.forEach((country) => {
-      createCountriesList(country);
-    });
+  if (cachedCountries) {
+    render();
     return;
   }
 
   try {
     const response = await fetch(
-      'https://restcountries.com/v3.1/all?fields=cca3,flags,name,population,region,subregion,capital,tld,currencies,languages'
+      'https://restcountries.com/v3.1/all?fields=cca3,flags,name,population,region,capital'
     );
     if (!response.ok) {
       throw new Error('API returned an error status');

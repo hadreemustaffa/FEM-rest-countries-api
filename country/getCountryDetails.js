@@ -1,42 +1,82 @@
-import { COUNTRIES_DATA_KEY } from '../scripts/constants.js';
-import { createErrorElement, clearErrorElement } from '../scripts/helpers.js';
+import {
+  COUNTRIES_DATA_KEY,
+  DETAILED_COUNTRIES_DATA_KEY,
+} from '../scripts/constants.js';
+import {
+  createErrorElement,
+  clearErrorElement,
+  getAllDataFromSessionStorage,
+  getDataFromSessionStorage,
+} from '../scripts/helpers.js';
 
-function getAllDataFromSessionStorage() {
-  const data = sessionStorage.getItem(COUNTRIES_DATA_KEY);
+async function getBorderCountryNamesWithCode(borderCodes = []) {
+  if (!borderCodes.length) return [];
 
-  if (!data) {
-    console.error('No country data found in sessionStorage.');
-    return [];
+  try {
+    const response = await fetch(
+      `https://restcountries.com/v3.1/alpha?codes=${borderCodes.join(',')}&fields=cca3,name`
+    );
+
+    if (!response.ok) {
+      throw new Error('Border API error');
+    }
+
+    const data = await response.json();
+
+    return data.map((c) => c);
+  } catch (error) {
+    console.error(error);
+    return borderCodes; // fallback
   }
-
-  return JSON.parse(data);
 }
 
-function getDataFromSessionStorage() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const countryName = decodeURIComponent(urlParams.get('name'));
-  const data = sessionStorage.getItem(COUNTRIES_DATA_KEY);
-  const countryData = JSON.parse(data).find(
-    (c) => c.name.common === countryName
-  );
+function storeDataInSessionStorage(country) {
+  const data =
+    JSON.parse(sessionStorage.getItem(DETAILED_COUNTRIES_DATA_KEY)) || {};
 
-  return countryData;
+  const key = country.name.common.toLowerCase();
+
+  data[key] = {
+    ...data[key],
+    ...country,
+  };
+
+  sessionStorage.setItem(DETAILED_COUNTRIES_DATA_KEY, JSON.stringify(data));
 }
 
-function getBorderCountryNames(borderCodes) {
-  const data = getAllDataFromSessionStorage();
+// this handle the case where some data returns more than one countries
+// e.g user navigate to a country for the first time where url is:
+// currently known data that returns more than one:
+// /country/?name=ireland
+// /country/?name=congo or /country/?name=republic of the congo
+function suggestNextCountriesInDataList(data) {
+  if (data.length > 1) {
+    const detailsContainer = document.querySelector('.details');
+    if (!detailsContainer) {
+      console.error('Details container not found in HTML.');
+      return;
+    }
+    const suggestions = document.createElement('p');
+    suggestions.classList.add('suggestions');
+    suggestions.textContent = 'Did you mean: ';
+    data.map((country, idx) => {
+      const listItemLink = document.createElement('a');
+      listItemLink.classList.add('suggestions__country');
+      listItemLink.href = `country/?name=${encodeURIComponent(country.name.common)}&code=${country.cca3}`;
+      listItemLink.textContent = country.name.common;
 
-  const borderCountryNames = borderCodes.map((code) => {
-    const country = data.find((c) => c.cca3 === code);
-    return country ? country.name.common : code;
-  });
+      if (idx === data.length - 1) {
+        suggestions.append(listItemLink, '?');
+      } else {
+        suggestions.append(listItemLink, ', ');
+      }
 
-  return borderCountryNames;
+      detailsContainer.before(suggestions);
+    });
+  }
 }
 
-function createCountryDetailsElement(country) {
-  const countryData = getDataFromSessionStorage();
-
+async function createCountryDetailsElement(country) {
   const detailsContainer = document.querySelector('.details');
   if (!detailsContainer) {
     console.error('Details container not found in HTML.');
@@ -51,8 +91,8 @@ function createCountryDetailsElement(country) {
 
   const flagImg = document.createElement('img');
   flagImg.classList.add('details__flag-img');
-  flagImg.src = countryData.flags.svg;
-  flagImg.alt = `${countryData.name.common} flag`;
+  flagImg.src = country.flags.svg;
+  flagImg.alt = `${country.name.common} flag`;
   flagContainer.appendChild(flagImg);
 
   const infoContainer = document.createElement('div');
@@ -63,7 +103,7 @@ function createCountryDetailsElement(country) {
 
   const countryName = document.createElement('h2');
   countryName.classList.add('details__info-name');
-  countryName.textContent = countryData.name.common;
+  countryName.textContent = country.name.common;
   mainInfo.appendChild(countryName);
 
   const infoList = document.createElement('ul');
@@ -71,34 +111,34 @@ function createCountryDetailsElement(country) {
 
   const firstColumn = document.createElement('div');
   const nativeNameLi = document.createElement('li');
-  nativeNameLi.innerHTML = `<strong>Native Name:</strong> ${countryData.name.nativeName ? Object.values(countryData.name.nativeName)[0].common : 'N/A'}`;
+  nativeNameLi.innerHTML = `<strong>Native Name:</strong> ${country.name.nativeName ? Object.values(country.name.nativeName)[0].common : 'N/A'}`;
   firstColumn.appendChild(nativeNameLi);
 
   const populationLi = document.createElement('li');
-  populationLi.innerHTML = `<strong>Population:</strong> ${countryData.population ? countryData.population.toLocaleString() : 'N/A'}`;
+  populationLi.innerHTML = `<strong>Population:</strong> ${country.population ? country.population.toLocaleString() : 'N/A'}`;
   firstColumn.appendChild(populationLi);
 
   const regionLi = document.createElement('li');
-  regionLi.innerHTML = `<strong>Region:</strong> ${countryData.region ? countryData.region : 'N/A'}`;
+  regionLi.innerHTML = `<strong>Region:</strong> ${country.region ? country.region : 'N/A'}`;
   firstColumn.appendChild(regionLi);
 
   const subRegionLi = document.createElement('li');
-  subRegionLi.innerHTML = `<strong>Sub Region:</strong> ${countryData.subregion ? countryData.subregion : 'N/A'}`;
+  subRegionLi.innerHTML = `<strong>Sub Region:</strong> ${country.subregion ? country.subregion : 'N/A'}`;
   firstColumn.appendChild(subRegionLi);
 
   const capitalLi = document.createElement('li');
-  capitalLi.innerHTML = `<strong>Capital:</strong> ${countryData.capital && countryData.capital.length > 0 ? countryData.capital[0] : 'N/A'}`;
+  capitalLi.innerHTML = `<strong>Capital:</strong> ${country.capital && country.capital.length > 0 ? country.capital[0] : 'N/A'}`;
   firstColumn.appendChild(capitalLi);
 
   const secondColumn = document.createElement('div');
   const tldLi = document.createElement('li');
-  tldLi.innerHTML = `<strong>Top Level Domain:</strong> ${countryData.tld ? countryData.tld.join(', ') : 'N/A'}`;
+  tldLi.innerHTML = `<strong>Top Level Domain:</strong> ${country.tld ? country.tld.join(', ') : 'N/A'}`;
   secondColumn.appendChild(tldLi);
 
   const currenciesLi = document.createElement('li');
   currenciesLi.innerHTML = `<strong>Currencies:</strong> ${
-    countryData.currencies
-      ? Object.values(countryData.currencies)
+    country.currencies
+      ? Object.values(country.currencies)
           .map((c) => c.name)
           .join(', ')
       : 'N/A'
@@ -106,7 +146,7 @@ function createCountryDetailsElement(country) {
   secondColumn.appendChild(currenciesLi);
 
   const languagesLi = document.createElement('li');
-  languagesLi.innerHTML = `<strong>Languages:</strong> ${countryData.languages ? Object.values(countryData.languages).join(', ') : 'N/A'}`;
+  languagesLi.innerHTML = `<strong>Languages:</strong> ${country.languages ? Object.values(country.languages).join(', ') : 'N/A'}`;
   secondColumn.appendChild(languagesLi);
 
   infoList.appendChild(firstColumn);
@@ -125,13 +165,15 @@ function createCountryDetailsElement(country) {
   borderList.classList.add('details__info-border-countries-list');
 
   if (country.borders && country.borders.length > 0) {
-    const borderCountryNames = getBorderCountryNames(country.borders);
-    borderCountryNames.forEach((name) => {
+    const borderCountryNamesWithCode = await getBorderCountryNamesWithCode(
+      country.borders
+    );
+    borderCountryNamesWithCode.forEach((border) => {
       const listItem = document.createElement('li');
       const listItemLink = document.createElement('a');
       listItem.classList.add('details__info-border-countries-item');
-      listItemLink.href = `country/?name=${encodeURIComponent(name)}`;
-      listItemLink.textContent = name;
+      listItemLink.href = `country/?name=${encodeURIComponent(border.name.common)}&code=${border.cca3}`;
+      listItemLink.textContent = border.name.common;
       listItem.appendChild(listItemLink);
       borderList.appendChild(listItem);
     });
@@ -158,22 +200,41 @@ function hideLoader() {
 async function getCountryDetails() {
   const urlParams = new URLSearchParams(window.location.search);
   const countryName = urlParams.get('name');
+  const countryCode = urlParams.get('code');
 
   if (!countryName) {
     console.error('No country name provided in URL parameters.');
     return;
   }
 
+  const cachedCountry = getDataFromSessionStorage(countryName);
+
+  if (cachedCountry) {
+    clearErrorElement();
+    createCountryDetailsElement(cachedCountry);
+    hideLoader();
+    return;
+  }
+
+  let endpoint = '';
+  if (countryCode) {
+    endpoint = `https://restcountries.com/v3.1/alpha/${countryCode}`;
+  } else {
+    endpoint = `https://restcountries.com/v3.1/name/${countryName}`;
+  }
+
   try {
-    const response = await fetch(
-      `https://restcountries.com/v3.1/name/${countryName}`
-    );
+    const response = await fetch(`${endpoint}`);
+
     if (!response.ok) {
       throw new Error('API returned an error status');
     }
+
     clearErrorElement();
     const data = await response.json();
     createCountryDetailsElement(data[0]);
+    storeDataInSessionStorage(data[0]);
+    suggestNextCountriesInDataList(data);
     hideLoader();
   } catch (error) {
     console.error('Error:', error);

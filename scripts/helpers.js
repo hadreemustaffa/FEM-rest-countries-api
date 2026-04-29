@@ -1,3 +1,8 @@
+import {
+  COUNTRIES_DATA_KEY,
+  DETAILED_COUNTRIES_DATA_KEY,
+} from './constants.js';
+
 export function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -6,26 +11,51 @@ export function shuffle(array) {
   return array;
 }
 
-export function showStatus(message, type = 'error') {
-  const status = document.getElementById('status');
-  if (!status) return;
-  status.textContent = message;
-  status.className = `status status--${type}`;
+export function debounce(fn, delay = 300) {
+  let timeoutId;
+
+  return function (...args) {
+    clearTimeout(timeoutId);
+
+    timeoutId = setTimeout(() => {
+      fn.apply(this, args);
+    }, delay);
+  };
 }
 
-export function createErrorElement(message) {
-  const main = document.querySelector('main');
-  const errorElement = document.createElement('div');
-  errorElement.setAttribute('aria-live', 'polite');
-  errorElement.classList.add('status', 'status--error');
-  errorElement.textContent = message;
-  main.appendChild(errorElement);
-}
+export function createErrorElement(
+  message,
+  container = document.querySelector('main')
+) {
+  if (!container) return;
 
-export function clearErrorElement() {
-  const main = document.querySelector('main');
-  const errorElement = main.querySelector('.status--error');
-  if (errorElement) {
-    main.removeChild(errorElement);
+  let errorElement = container.querySelector('.status--error');
+
+  if (!errorElement) {
+    errorElement = document.createElement('div');
+    errorElement.className = 'status status--error';
+    errorElement.setAttribute('role', 'alert');
+    container.appendChild(errorElement);
   }
+
+  errorElement.textContent = message;
+}
+
+export function clearErrorElement(container = document.querySelector('main')) {
+  if (!container) return;
+
+  const errorElement = container.querySelector('.status--error');
+  errorElement?.remove();
+}
+
+export function getAllDataFromSessionStorage() {
+  const data = sessionStorage.getItem(COUNTRIES_DATA_KEY);
+  return data ? JSON.parse(data) : null;
+}
+
+export function getDataFromSessionStorage(countryName) {
+  const data =
+    JSON.parse(sessionStorage.getItem(DETAILED_COUNTRIES_DATA_KEY)) || {};
+
+  return data[countryName.toLowerCase()] || null;
 }

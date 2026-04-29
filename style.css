@@ -85,7 +85,7 @@
   --color-on-surface: hsl(200, 15%, 8%);
   --color-emphasis: hsl(0, 0%, 100%);
   --color-error: hsl(0, 100%, 59%);
-  --color-bg-error: hsl(0, 100%, 59%, 0.2);
+  --color-bg-error: hsla(0, 100%, 59%, 0.2);
 }
 
 [data-theme='dark'] {
@@ -276,7 +276,6 @@ select {
     & .card__details {
       padding: var(--spacing-md);
       background-color: var(--color-surface);
-      height: 100%;
 
       & .card__details-title {
         margin-bottom: var(--spacing-sm);
@@ -293,16 +292,32 @@ select {
 }
 
 .status {
-  position: absolute;
+  position: fixed;
   bottom: var(--spacing-md);
   right: var(--spacing-md);
   padding: var(--spacing-xs);
   border-radius: var(--radius-sm);
   font-size: var(--font-size-sm);
+  z-index: 99;
 
   &.status--error {
     color: var(--color-error);
     background-color: var(--color-bg-error);
+  }
+}
+
+.suggestions {
+  font-style: italic;
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-sm);
+
+  & .suggestions__country {
+    text-decoration: underline;
+    opacity: 0.8;
+
+    &:hover {
+      opacity: 1;
+    }
   }
 }
 
@@ -461,7 +476,7 @@ select {
   gap: var(--spacing-xl);
 }
 
-@media (max-width: 1248px) {
+@media (max-width: 78rem) {
   .cards {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -476,7 +491,7 @@ select {
   }
 }
 
-@media (max-width: 992px) {
+@media (max-width: 62rem) {
   .cards {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -490,7 +505,7 @@ select {
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 40rem) {
   .cards {
     grid-template-columns: 1fr;
   }
