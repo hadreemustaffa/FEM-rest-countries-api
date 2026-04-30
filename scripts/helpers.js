@@ -48,6 +48,13 @@ export function clearErrorElement(container = document.querySelector('main')) {
   errorElement?.remove();
 }
 
+export function hideLoader() {
+  const loader = document.querySelector('.loader__container');
+  if (loader) {
+    loader.remove();
+  }
+}
+
 export function getAllDataFromSessionStorage() {
   const data = sessionStorage.getItem(COUNTRIES_DATA_KEY);
   return data ? JSON.parse(data) : null;

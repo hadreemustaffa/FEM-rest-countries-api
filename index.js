@@ -5,6 +5,7 @@ import {
   createErrorElement,
   clearErrorElement,
   getAllDataFromSessionStorage,
+  hideLoader,
 } from './scripts/helpers.js';
 
 function createCountriesList(country) {
@@ -129,6 +130,7 @@ async function getCountries() {
 
   if (cachedCountries) {
     render();
+    hideLoader();
     return;
   }
 
@@ -147,6 +149,7 @@ async function getCountries() {
     shuffledData.forEach((country) => {
       createCountriesList(country);
     });
+    hideLoader();
   } catch (error) {
     console.error('Error:', error);
     createErrorElement('Something went wrong. Please try again later.');

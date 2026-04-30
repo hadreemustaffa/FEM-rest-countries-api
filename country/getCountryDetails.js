@@ -7,6 +7,7 @@ import {
   clearErrorElement,
   getAllDataFromSessionStorage,
   getDataFromSessionStorage,
+  hideLoader,
 } from '../scripts/helpers.js';
 
 async function getBorderCountryNamesWithCode(borderCodes = []) {
@@ -188,13 +189,6 @@ async function createCountryDetailsElement(country) {
 
   detailsContainer.appendChild(flagContainer);
   detailsContainer.appendChild(infoContainer);
-}
-
-function hideLoader() {
-  const loader = document.getElementById('loader');
-  if (loader) {
-    loader.remove();
-  }
 }
 
 async function getCountryDetails() {

@@ -141,7 +141,6 @@ body {
 
 main {
   padding: 0 var(--spacing-3xl) var(--spacing-2xl);
-  transition: padding 300ms ease;
 }
 
 .btn {
@@ -401,48 +400,40 @@ select {
   }
 }
 
+.loader__container {
+  position: absolute;
+  bottom: -0.5rem;
+  left: 0;
+  width: 100%;
+}
 .loader {
   width: 100%;
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  padding: 1px;
+  height: 4.8px;
+  display: inline-block;
+  position: relative;
+  background: var(--color-surface);
+  overflow: hidden;
 }
-.loader:before {
+.loader::after {
   content: '';
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  bottom: -4px;
-  left: -4px;
-}
-.loader__bar {
+  width: 192px;
+  height: 4.8px;
+  background: currentColor;
   position: absolute;
   top: 0;
-  right: 100%;
-  bottom: 0;
   left: 0;
-  background: var(--color-text);
-  width: 500px;
-  animation: borealisBar 2s linear infinite;
-  transform-origin: left;
+  box-sizing: border-box;
+  animation: animloader 2s linear infinite;
 }
 
-@keyframes borealisBar {
+@keyframes animloader {
   0% {
-    transform: translateX(0%) scaleX(0);
+    left: 0;
+    transform: translateX(-100%);
   }
-
-  10% {
-    transform: translateX(0%) scaleX(0.25);
-  }
-
-  90% {
-    transform: translateX(300%) scaleX(0.25);
-  }
-
   100% {
-    transform: translateX(400%) scaleX(0);
+    left: 100%;
+    transform: translateX(0%);
   }
 }
 
@@ -506,6 +497,13 @@ select {
 }
 
 @media (max-width: 40rem) {
+  header {
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+  main {
+    padding: 0 var(--spacing-lg) var(--spacing-2xl);
+  }
+
   .cards {
     grid-template-columns: 1fr;
   }
