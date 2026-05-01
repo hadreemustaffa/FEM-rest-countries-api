@@ -46,6 +46,13 @@
   }
 }
 
+@font-face {
+  font-family: 'Nunito Sans';
+  src: url('assets/fonts/nunito-sans/NunitoSans-VariableFont_wght.woff2')
+    format('woff2');
+  font-display: swap;
+}
+
 :root {
   color-scheme: light dark;
 
@@ -270,6 +277,16 @@ select {
         height: 200px;
         width: 100%;
         object-fit: cover;
+        background: #eee;
+        background: linear-gradient(
+          110deg,
+          #ececec 8%,
+          #f5f5f5 18%,
+          #ececec 33%
+        );
+        background-size: 200% 100%;
+
+        animation: 1.5s shine linear infinite;
       }
     }
     & .card__details {
@@ -443,6 +460,12 @@ select {
   }
   to {
     transform: rotateX(180deg);
+  }
+}
+
+@keyframes shine {
+  to {
+    background-position-x: -200%;
   }
 }
 

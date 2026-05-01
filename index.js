@@ -20,6 +20,7 @@ function createCountriesList(country) {
 
   const flagImg = document.createElement('img');
   flagImg.classList.add('card__flag-img');
+  flagImg.setAttribute('loading', 'lazy');
   flagImg.src = country.flags.svg;
   flagImg.alt = `${country.name.common} flag`;
 
